@@ -48,13 +48,7 @@ app.use("/api/courses", coursesRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/vision", visionRoutes);
 
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://study-sphere-ai-inky.vercel.app"
-  ],
-  credentials: true
-}));
+
 
 // Fallback error handler
 app.use((err, req, res, next) => {
