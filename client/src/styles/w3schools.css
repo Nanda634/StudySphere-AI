@@ -1,0 +1,302 @@
+/* Recreates the classic w3schools.com tutorial layout: white content area, green (#04AA6D)
+   accents, grey sidebar with a green "active" highlight, grey code blocks, and the black
+   Previous/Next pager at the bottom of each chapter. Scoped entirely under .w3-tut so it never
+   leaks into the rest of the (dark-themed) app. */
+
+.w3-tut {
+  --w3-green: #04aa6d;
+  --w3-green-dark: #04AA6D;
+  --w3-grey: #f1f1f1;
+  --w3-border: #ccc;
+  --w3-text: #333;
+  --w3-black: #282a35;
+  font-family: "Segoe UI", Verdana, Arial, sans-serif;
+  color: var(--w3-text);
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+}
+
+.w3-tut .w3-topbar {
+  background: var(--w3-black);
+  color: #fff;
+  padding: 14px 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.w3-tut .w3-topbar .w3-brand {
+  font-weight: 700;
+  font-size: 16px;
+}
+.w3-tut .w3-topbar .w3-brand span {
+  color: var(--w3-green);
+}
+
+.w3-tut .w3-shell {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  min-height: 520px;
+}
+
+@media (max-width: 768px) {
+  .w3-tut .w3-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sidebar */
+.w3-tut .w3-sidenav {
+  background: #fff;
+  border-right: 1px solid #eee;
+  padding: 10px 0;
+  max-height: 78vh;
+  overflow-y: auto;
+}
+.w3-tut .w3-sidenav .w3-sidenav-title {
+  padding: 10px 20px 6px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #888;
+  font-weight: 700;
+}
+.w3-tut .w3-sidenav button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 20px;
+  font-size: 15px;
+  color: #222;
+  background: none;
+  border: none;
+  border-left: 5px solid transparent;
+  cursor: pointer;
+}
+.w3-tut .w3-sidenav button:hover {
+  background: var(--w3-grey);
+}
+.w3-tut .w3-sidenav button.active {
+  background: var(--w3-green);
+  color: #fff;
+  border-left-color: #02623f;
+  font-weight: 600;
+}
+
+/* Main content */
+.w3-tut .w3-content {
+  padding: 26px 34px 0;
+  background: #fff;
+}
+.w3-tut .w3-crumb {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 6px;
+}
+.w3-tut .w3-crumb a {
+  color: var(--w3-green);
+  text-decoration: none;
+  cursor: pointer;
+}
+.w3-tut h1.w3-chapter-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+.w3-tut .w3-lead {
+  font-size: 18px;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+.w3-tut h2.w3-h2 {
+  font-size: 24px;
+  color: #1a1a1a;
+  margin: 26px 0 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 6px;
+}
+.w3-tut p.w3-body-text {
+  font-size: 16.5px;
+  line-height: 1.7;
+  color: #333;
+  margin: 0 0 14px;
+  white-space: pre-wrap;
+}
+.w3-tut .w3-keypoints {
+  background: #f8f8f8;
+  border-left: 4px solid var(--w3-green);
+  padding: 14px 18px;
+  margin: 18px 0;
+  border-radius: 0 6px 6px 0;
+}
+.w3-tut .w3-keypoints h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #1a1a1a;
+}
+.w3-tut .w3-keypoints ul {
+  margin: 0;
+  padding-left: 20px;
+}
+.w3-tut .w3-keypoints li {
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+/* Tabs (Lesson / Quiz / Coding) styled like w3schools' green tab bar */
+.w3-tut .w3-tabbar {
+  display: flex;
+  gap: 2px;
+  margin: 18px 0 0;
+  border-bottom: 3px solid var(--w3-green);
+}
+.w3-tut .w3-tabbar button {
+  padding: 10px 20px;
+  font-size: 15px;
+  border: none;
+  background: #ddd;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+}
+.w3-tut .w3-tabbar button.active {
+  background: var(--w3-green);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Try it Yourself editor block */
+.w3-tut .w3-tryit {
+  margin: 22px 0 30px;
+}
+.w3-tut .w3-tryit-label {
+  display: inline-block;
+  background: var(--w3-black);
+  color: #fff;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 4px 4px 0 0;
+}
+.w3-tut .w3-tryit-box {
+  border: 1px solid var(--w3-border);
+}
+.w3-tut .w3-tryit textarea {
+  width: 100%;
+  min-height: 180px;
+  background: #f7f7f7;
+  color: #222;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 14.5px;
+  padding: 14px;
+  border: none;
+  border-bottom: 1px solid var(--w3-border);
+  resize: vertical;
+  outline: none;
+}
+.w3-tut .w3-tryit-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #fafafa;
+  border-bottom: 1px solid var(--w3-border);
+}
+.w3-tut .w3-tryit-toolbar select {
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--w3-border);
+}
+.w3-tut .w3-runbtn {
+  background: var(--w3-green);
+  color: #fff;
+  border: none;
+  padding: 9px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.w3-tut .w3-runbtn:hover {
+  background: #039261;
+}
+.w3-tut .w3-runbtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.w3-tut .w3-tryit-result {
+  background: #fff;
+  padding: 14px;
+}
+.w3-tut .w3-tryit-result-label {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.w3-tut .w3-tryit-output {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: "Consolas", monospace;
+  font-size: 14px;
+  padding: 12px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  min-height: 24px;
+}
+.w3-tut .w3-tryit-feedback {
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+/* Bottom Previous/Next pager, exactly like w3schools chapter navigation */
+.w3-tut .w3-pager {
+  display: flex;
+  border-top: 1px solid #eee;
+  margin-top: 30px;
+}
+.w3-tut .w3-pager button {
+  flex: 1;
+  background: var(--w3-black);
+  color: #fff;
+  border: none;
+  padding: 18px 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+.w3-tut .w3-pager button:first-child {
+  text-align: left;
+  padding-left: 24px;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+}
+.w3-tut .w3-pager button:last-child {
+  text-align: right;
+  padding-right: 24px;
+}
+.w3-tut .w3-pager button:hover:not(:disabled) {
+  background: var(--w3-green);
+}
+.w3-tut .w3-pager button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.w3-tut .w3-footer-note {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  padding: 14px;
+}
+
+.w3-tut .w3-loading {
+  padding: 40px 0;
+  text-align: center;
+  color: #888;
+  font-size: 15px;
+}

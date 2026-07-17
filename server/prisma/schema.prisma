@@ -1,0 +1,243 @@
+// StudySphere AI - Database Schema
+// Using PostgreSQL (Neon). Tables are mapped to lowercase names via @@map
+// so the schema in your Neon project stays clean and predictable.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  FACULTY
+}
+
+// Temporary store for email-OTP verification during registration. A row is created when an
+// OTP is sent, and consumed (deleted) once verified and the real User is created. The pending
+// registration details (name/hashed password/role) are stashed in `payload` so verify-otp can
+// finish creating the account without asking the user to retype anything.
+model EmailOtp {
+  id          String   @id @default(cuid())
+  email       String
+  purpose     String   // "register" (room to add "login" / "reset-password" later)
+  otpHash     String
+  payload     String?  // JSON: { name, hashedPassword, role } — only used for purpose "register"
+  attempts    Int      @default(0)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([email, purpose])
+  @@map("email_otps")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  name              String
+  email             String    @unique
+  password          String
+  role              Role      @default(STUDENT)
+  coins             Int       @default(0)
+  freeMockExamUsed  Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+
+  studySessions StudySession[]
+  plannerTasks  PlannerTask[]
+  pomodoros     PomodoroSession[]
+  cgpaRecords   CgpaRecord[]
+  attendance    AttendanceRecord[]
+  quizAttempts  QuizAttempt[]
+  coinTx        CoinTransaction[]
+  materials     Material[]
+  assignments   Assignment[]
+  liveClasses   LiveClass[]
+  chatSessions  ChatSession[]
+  codingAttempts CodingAttempt[]
+
+  @@map("users")
+}
+
+// Stores every Goose-generated study session: notes, flashcards, mcqs, explanations, exam papers
+model StudySession {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // "explanation" | "notes" | "flashcards" | "mcq" | "quiz" | "exam_paper"
+  topic       String
+  examTarget  String?  // e.g. "UPSC", "GATE", "School Board" — optional context for Goose
+  difficulty  String?  // "beginner" | "intermediate" | "advanced"
+  content     String   // JSON stringified content
+  bookmarked  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@map("sessions")
+}
+
+model QuizAttempt {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  topic        String
+  difficulty   String
+  examType     String?  // set when this is a real-world mock exam, e.g. "TCS NQT", "JEE Main"
+  assignmentId String?  // set when this attempt was for a faculty-assigned quiz
+  score        Int
+  total        Int
+  coinsEarned  Int      @default(0)
+  aiFeedback   String?  // Goose's generated feedback on this attempt
+  details      String   // JSON: per-question correctness
+  createdAt    DateTime @default(now())
+
+  @@map("quiz_attempts")
+}
+
+model CoinTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  amount      Int      // positive = earned, negative = spent
+  reason      String   // e.g. "Quiz completed: Arrays (moderate)", "Unlocked TCS NQT mock exam"
+  createdAt   DateTime @default(now())
+
+  @@map("coin_transactions")
+}
+
+model PlannerTask {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  subject     String?
+  date        DateTime
+  done        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@map("planner_tasks")
+}
+
+model PomodoroSession {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  focusMins   Int
+  breakMins   Int
+  completedAt DateTime @default(now())
+
+  @@map("pomodoro_sessions")
+}
+
+model CgpaRecord {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  semester    Int
+  sgpa        Float
+  credits     Float
+  createdAt   DateTime @default(now())
+
+  @@map("cgpa_records")
+}
+
+model AttendanceRecord {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  subject     String
+  attended    Int
+  total       Int
+  updatedAt   DateTime @updatedAt
+
+  @@map("attendance_records")
+}
+
+// Faculty-uploaded notes, materials, and video-class links
+model Material {
+  id          String   @id @default(cuid())
+  facultyId   String
+  faculty     User     @relation(fields: [facultyId], references: [id])
+  subject     String
+  title       String
+  type        String   // "notes" | "material" | "video"
+  content     String?  // free text notes, if type is "notes"
+  url         String?  // link to file/video, if applicable
+  createdAt   DateTime @default(now())
+
+  @@map("materials")
+}
+
+// Faculty-assigned quizzes/exams. The quiz content itself is generated by Goose
+// and stored as JSON, same shape as a normal mcq/quiz StudySession.
+model Assignment {
+  id          String   @id @default(cuid())
+  facultyId   String
+  faculty     User     @relation(fields: [facultyId], references: [id])
+  subject     String
+  title       String
+  difficulty  String
+  quizContent String   // JSON: { questions: [...] }
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+
+  @@map("assignments")
+}
+
+// Faculty-created live class sessions (external meeting link, e.g. Google Meet/Zoom)
+model LiveClass {
+  id           String   @id @default(cuid())
+  facultyId    String
+  faculty      User     @relation(fields: [facultyId], references: [id])
+  title        String
+  subject      String
+  roomLink     String
+  scheduledAt  DateTime
+  createdAt    DateTime @default(now())
+
+  @@map("live_classes")
+}
+
+// A saved Chat with Goose conversation, so students/faculty can revisit past chats
+// the same way ChatGPT keeps a history sidebar.
+model ChatSession {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  title     String        // auto-set from the first message
+  messages  ChatMessage[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id            String      @id @default(cuid())
+  chatSessionId String
+  chatSession   ChatSession @relation(fields: [chatSessionId], references: [id])
+  role          String      // "user" | "ai"
+  content       String
+  imageUrl      String?     // set if this message included an uploaded image
+  createdAt     DateTime    @default(now())
+
+  @@map("chat_messages")
+}
+
+// AI-reviewed coding assessments (Goose reviews the code and scores it — no
+// real code execution/sandbox involved, see README for why).
+model CodingAttempt {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  topic      String
+  language   String
+  problem    String   // the problem statement Goose generated
+  code       String   // the student's submitted code
+  score      Int      // 0-100, Goose's AI-reviewed score
+  aiFeedback String
+  coinsEarned Int     @default(0)
+  createdAt  DateTime @default(now())
+
+  @@map("coding_attempts")
+}
