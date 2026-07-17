@@ -92,9 +92,15 @@ export default function AIAssistant() {
   }
 
   return (
-    <div className={mode === "chat" ? "max-w-6xl mx-auto px-6 py-10" : "max-w-4xl mx-auto px-6 py-10"}>
-      <div className="flex items-start justify-between gap-4 mb-1 flex-wrap">
-        <h1 className="font-display text-3xl">🪿 Goose — your AI Study Assistant</h1>
+   <div
+    className={
+      mode === "chat"
+        ? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8"
+        : "max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8"
+  }
+>
+      <div className="flex overflow-x-auto whitespace-nowrap gap-2 pb-2 mb-6 border-b border-white/10 scrollbar-hide">
+        <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl">🪿 Goose — your AI Study Assistant</h1>
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
@@ -378,93 +384,232 @@ function ChatWithHistory({ speechLang, language }) {
   }
 
   return (
-    <div className="flex gap-4 h-[70vh]">
-      {/* History sidebar, ChatGPT-style */}
-      {sidebarOpen && (
-        <aside className="w-60 bg-panel rounded-2xl p-3 flex flex-col shrink-0">
-          <button onClick={newChat} className="bg-glow text-ink font-semibold text-sm px-3 py-2 rounded-lg mb-3 hover:brightness-110">
-            + New chat
-          </button>
-          <div className="flex-1 overflow-y-auto space-y-1">
-            {sessions.map((s) => (
-              <div
-                key={s.id}
-                onClick={() => openSession(s.id)}
-                className={`px-3 py-2 rounded-lg text-sm cursor-pointer flex items-center justify-between group ${
-                  activeId === s.id ? "bg-glow/20 text-glow" : "text-ink2 hover:bg-panelLight hover:text-paper"
-                }`}
-              >
-                <span className="truncate">{s.title}</span>
-                <button onClick={(e) => deleteSession(s.id, e)} className="opacity-0 group-hover:opacity-100 text-coral text-xs ml-2">
-                  ✕
-                </button>
-              </div>
-            ))}
-            {sessions.length === 0 && <p className="text-ink2 text-xs px-3">No past chats yet.</p>}
-          </div>
-        </aside>
-      )}
+  <div className="flex flex-col lg:flex-row gap-4 h-[calc(100vh-180px)]">
 
-      <div className="bg-panel rounded-2xl p-6 flex flex-col flex-1 min-w-0">
-        <div className="flex items-center justify-between mb-3 text-xs text-ink2">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen((o) => !o)} className="hover:text-paper">
-              {sidebarOpen ? "◀ Hide history" : "▶ Show history"}
+    {/* Sidebar */}
+    {sidebarOpen && (
+      <aside
+        className="
+          w-full
+          lg:w-72
+          bg-panel
+          rounded-2xl
+          p-4
+          flex
+          flex-col
+          shrink-0
+          max-h-[300px]
+          lg:max-h-full
+        "
+      >
+        <button
+          onClick={newChat}
+          className="bg-glow text-ink font-semibold rounded-xl py-3 mb-4 hover:brightness-110"
+        >
+          + New Chat
+        </button>
+
+        <div className="flex-1 overflow-y-auto space-y-2">
+          {sessions.map((s) => (
+            <div
+              key={s.id}
+              onClick={() => openSession(s.id)}
+              className={`group flex items-center justify-between rounded-xl px-3 py-3 cursor-pointer transition ${
+                activeId === s.id
+                  ? "bg-glow/20 text-glow"
+                  : "hover:bg-panelLight text-ink2 hover:text-paper"
+              }`}
+            >
+              <span className="truncate flex-1">{s.title}</span>
+
+              <button
+                onClick={(e) => deleteSession(s.id, e)}
+                className="ml-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 text-coral"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+
+          {sessions.length === 0 && (
+            <p className="text-xs text-ink2">
+              No previous chats
+            </p>
+          )}
+        </div>
+      </aside>
+    )}
+
+    {/* Chat */}
+    <div className="flex flex-col flex-1 bg-panel rounded-2xl overflow-hidden">
+
+      {/* Top Bar */}
+      <div className="border-b border-white/10 p-4">
+
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+
+          <div className="flex flex-wrap items-center gap-3">
+
+            <button
+              onClick={() => setSidebarOpen((o) => !o)}
+              className="text-glow hover:underline"
+            >
+              {sidebarOpen ? "Hide History" : "Show History"}
             </button>
-            <span>{supportsSpeech ? "🎤 Voice input available" : "Voice input needs Chrome or Edge"}</span>
+
+            <span className="text-xs text-ink2">
+              {supportsSpeech
+                ? "🎤 Voice input available"
+                : "Voice input needs Chrome"}
+            </span>
+
           </div>
+
           {supportsSynthesis && (
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" checked={voiceReplies} onChange={(e) => setVoiceReplies(e.target.checked)} className="accent-glow" />
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={voiceReplies}
+                onChange={(e) =>
+                  setVoiceReplies(e.target.checked)
+                }
+              />
               Read replies aloud
             </label>
           )}
         </div>
+      </div>
 
-        <div className="flex-1 overflow-y-auto space-y-4 mb-4">
-          {chatLog.length === 0 && (
-            <p className="text-ink2 text-sm">
-              🪿 Hi, I'm Goose. Ask me anything, upload a photo, or use the mic below.
-            </p>
-          )}
-          {chatLog.map((m, i) => (
-            <div key={i} className={`max-w-[80%] ${m.role === "user" ? "ml-auto" : ""}`}>
-              {m.role === "ai" && <p className="text-xs text-glow font-mono mb-1">Goose</p>}
-              {m.image && <img src={m.image} alt="Uploaded" className="rounded-lg mb-1 max-h-48" />}
-              <div className={`rounded-xl px-4 py-2 whitespace-pre-wrap ${m.role === "user" ? "bg-glow text-ink" : "bg-ink text-paper"}`}>
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-4 py-5 space-y-5">
+
+        {chatLog.length === 0 && (
+          <div className="text-ink2">
+            🪿 Hi, I'm Goose.
+            <br />
+            Ask anything, upload an image or use voice.
+          </div>
+        )}
+
+        {chatLog.map((m, i) => (
+          <div
+            key={i}
+            className={`flex ${
+              m.role === "user"
+                ? "justify-end"
+                : "justify-start"
+            }`}
+          >
+            <div className="max-w-full sm:max-w-[85%] lg:max-w-[70%]">
+
+              {m.role === "ai" && (
+                <p className="text-xs text-glow mb-1">
+                  Goose
+                </p>
+              )}
+
+              {m.image && (
+                <img
+                  src={m.image}
+                  alt=""
+                  className="rounded-xl mb-2 max-h-60"
+                />
+              )}
+
+              <div
+                className={`rounded-2xl px-4 py-3 whitespace-pre-wrap break-words ${
+                  m.role === "user"
+                    ? "bg-glow text-ink"
+                    : "bg-ink text-paper"
+                }`}
+              >
                 {m.text}
               </div>
             </div>
-          ))}
-          {loading && <Loader label="Goose is typing..." />}
-        </div>
+          </div>
+        ))}
 
-        <div className="flex gap-2">
+        {loading && <Loader label="Goose is typing..." />}
+      </div>
+
+      {/* Bottom Input */}
+      <div className="border-t border-white/10 p-4 bg-panel">
+
+        <div className="flex flex-wrap lg:flex-nowrap items-center gap-2">
+
           {supportsSpeech && (
             <button
-              onClick={listening ? stopListening : startListening}
-              className={`px-4 rounded-lg border ${listening ? "border-coral text-coral animate-pulse" : "border-white/10 text-ink2 hover:bg-ink"}`}
-              title="Speak your question"
+              onClick={
+                listening
+                  ? stopListening
+                  : startListening
+              }
+              className={`h-12 w-12 rounded-xl border ${
+                listening
+                  ? "border-coral text-coral animate-pulse"
+                  : "border-white/10"
+              }`}
             >
-              {listening ? "● Stop" : "🎤"}
+              {listening ? "●" : "🎤"}
             </button>
           )}
-          <label className="px-4 rounded-lg border border-white/10 text-ink2 hover:bg-ink flex items-center cursor-pointer" title="Upload a photo">
+
+          <label className="h-12 w-12 rounded-xl border border-white/10 flex items-center justify-center cursor-pointer">
             📷
-            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
           </label>
+
           <input
             value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendChat(chatInput)}
+            onChange={(e) =>
+              setChatInput(e.target.value)
+            }
+            onKeyDown={(e) =>
+              e.key === "Enter" &&
+              sendChat(chatInput)
+            }
             placeholder="Ask Goose anything..."
-            className="flex-1 bg-ink border border-white/10 rounded-lg px-4 py-2 outline-none focus:border-glow"
+            className="
+              flex-1
+              min-w-[180px]
+              h-12
+              bg-ink
+              rounded-xl
+              px-4
+              outline-none
+              border
+              border-white/10
+              focus:border-glow
+            "
           />
-          <button onClick={() => sendChat(chatInput)} disabled={loading} className="bg-glow text-ink font-semibold px-5 rounded-lg hover:brightness-110">
+
+          <button
+            onClick={() => sendChat(chatInput)}
+            disabled={loading}
+            className="
+              h-12
+              px-6
+              rounded-xl
+              bg-glow
+              text-ink
+              font-semibold
+              hover:brightness-110
+            "
+          >
             Send
           </button>
+
         </div>
+
       </div>
+
     </div>
-  );
+
+  </div>
+);
 }
