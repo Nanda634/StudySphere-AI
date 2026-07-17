@@ -48,6 +48,14 @@ app.use("/api/courses", coursesRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/vision", visionRoutes);
 
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://study-sphere-ai-inky.vercel.app"
+  ],
+  credentials: true
+}));
+
 // Fallback error handler
 app.use((err, req, res, next) => {
   console.error(err);
@@ -55,4 +63,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`StudySphere AI backend running on http://localhost:${PORT}`));
+
+app.listen(PORT, () => {
+  console.log(`🚀 StudySphere AI backend is running on port ${PORT}`);
+});
