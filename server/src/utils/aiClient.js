@@ -33,24 +33,41 @@ function requireApiKey() {
  */
 async function callAI({ system, user }, { json = false } = {}) {
   const apiKey = requireApiKey();
-  console.log("Using Gemini model:", GEMINI_MODEL);
 
-  const url = `${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+console.log("Using Gemini model:", GEMINI_MODEL);
 
-  console.log("Gemini URL:", url);
+const generationConfig = {
+  temperature: 0.2,
+  maxOutputTokens: 8192,
+};
 
-  const generationConfig = { temperature: 0.2, maxOutputTokens: 8192 };
-  if (json) generationConfig.responseMimeType = "application/json";
+if (json) {
+  generationConfig.responseMimeType = "application/json";
+}
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: system }] },
-      contents: [{ role: "user", parts: [{ text: user }] }],
-      generationConfig,
-    }),
-  });
+const url = `${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent`;
+
+console.log("Gemini URL:", url);
+
+const res = await fetch(url, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-goog-api-key": apiKey,
+  },
+  body: JSON.stringify({
+    systemInstruction: {
+      parts: [{ text: system }],
+    },
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: user }],
+      },
+    ],
+    generationConfig,
+  }),
+});
 
   if (!res.ok) {
   const errText = await res.text();
@@ -92,13 +109,18 @@ async function callVision({ prompt, imageBase64, mimeType = "image/jpeg" }) {
   const apiKey = requireApiKey();
   console.log("Using Gemini model:", GEMINI_MODEL);
 
-  const url = `${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+  const url = `${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent`;
 
   console.log("Gemini URL:", url);
 
+  
+
   const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  method: "POST",
+  headers: {
+  "Content-Type": "application/json",
+  "X-goog-api-key": apiKey,
+},
     body: JSON.stringify({
       contents: [
         {
