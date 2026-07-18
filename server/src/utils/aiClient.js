@@ -2,16 +2,25 @@
 // https://aistudio.google.com/apikey and set GEMINI_API_KEY in server/.env.
 require("dotenv").config();
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
 function requireApiKey() {
   const apiKey = process.env.GEMINI_API_KEY;
+
+  console.log(
+    "Using Gemini key:",
+    apiKey ? apiKey.substring(0, 10) : "NOT FOUND"
+  );
+
   if (!apiKey) {
-    const err = new Error("GEMINI_API_KEY is not set. Get a free key at https://aistudio.google.com/apikey and add it to server/.env.");
+    const err = new Error(
+      "GEMINI_API_KEY is not set. Get a free key at https://aistudio.google.com/apikey and add it to server/.env."
+    );
     err.nonRetryable = true;
     throw err;
   }
+
   return apiKey;
 }
 
@@ -39,9 +48,24 @@ async function callAI({ system, user }, { json = false } = {}) {
   });
 
   if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Gemini API error: ${res.status} ${errText}`);
+  const errText = await res.text();
+
+  console.error("Gemini API Error:", errText);
+
+  if (res.status === 401) {
+    const err = new Error("Invalid Gemini API key.");
+    err.nonRetryable = true;
+    throw err;
   }
+
+  if (res.status === 429) {
+    const err = new Error("Gemini quota exceeded for this project.");
+    err.nonRetryable = true;
+    throw err;
+  }
+
+  throw new Error(`Gemini API error: ${res.status} ${errText}`);
+}
 
   const data = await res.json();
   const parts = data.candidates?.[0]?.content?.parts || [];
@@ -77,10 +101,24 @@ async function callVision({ prompt, imageBase64, mimeType = "image/jpeg" }) {
   });
 
   if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Gemini vision error: ${res.status} ${errText}`);
+  const errText = await res.text();
+
+  console.error("Gemini Vision Error:", errText);
+
+  if (res.status === 401) {
+    const err = new Error("Invalid Gemini API key.");
+    err.nonRetryable = true;
+    throw err;
   }
 
+  if (res.status === 429) {
+    const err = new Error("Gemini quota exceeded for this project.");
+    err.nonRetryable = true;
+    throw err;
+  }
+
+  throw new Error(`Gemini vision error: ${res.status} ${errText}`);
+}
   const data = await res.json();
   const parts = data.candidates?.[0]?.content?.parts || [];
   const text = parts.map((p) => p.text || "").join("\n");
