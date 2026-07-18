@@ -33,11 +33,16 @@ function requireApiKey() {
  */
 async function callAI({ system, user }, { json = false } = {}) {
   const apiKey = requireApiKey();
+  console.log("Using Gemini model:", GEMINI_MODEL);
+
+  const url = `${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+
+  console.log("Gemini URL:", url);
 
   const generationConfig = { temperature: 0.2, maxOutputTokens: 8192 };
   if (json) generationConfig.responseMimeType = "application/json";
 
-  const res = await fetch(`${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -85,8 +90,13 @@ async function callAI({ system, user }, { json = false } = {}) {
  */
 async function callVision({ prompt, imageBase64, mimeType = "image/jpeg" }) {
   const apiKey = requireApiKey();
+  console.log("Using Gemini model:", GEMINI_MODEL);
 
-  const res = await fetch(`${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+  const url = `${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+
+  console.log("Gemini URL:", url);
+
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
