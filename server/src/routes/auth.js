@@ -57,14 +57,14 @@ router.post("/send-otp", async (req, res) => {
       },
     });
 
-    const mailResult = await sendOtpEmail(normalizedEmail, otp, "register");
+    await sendOtpEmail(normalizedEmail, otp, "register");
 
-    res.json({
-      message: "Verification code sent to your email.",
-      email: normalizedEmail,
-      expiresInMinutes: OTP_EXPIRY_MINUTES,
-      ...(mailResult.devMode ? { devOtp: otp } : {}),
-    });
+res.json({
+  success: true,
+  message: "Verification code sent successfully.",
+  email: normalizedEmail,
+  expiresInMinutes: OTP_EXPIRY_MINUTES,
+});
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Couldn't send verification code. Try again." });
@@ -144,16 +144,12 @@ router.post("/resend-otp", async (req, res) => {
       data: { otpHash, attempts: 0, expiresAt: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000) },
     });
 
-    const mailResult = await sendOtpEmail(normalizedEmail, otp, "register");
-    res.json({
-      message: "A new code has been sent.",
-      expiresInMinutes: OTP_EXPIRY_MINUTES,
-      ...(mailResult.devMode ? { devOtp: otp } : {}),
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Couldn't resend the code. Try again." });
-  }
+    await sendOtpEmail(normalizedEmail, otp, "register");
+
+res.json({
+  success: true,
+  message: "A new verification code has been sent.",
+  expiresInMinutes: OTP_EXPIRY_MINUTES,
 });
 
 // STEP 1 of password reset: if an account exists for this email, send a reset code. Always
@@ -184,12 +180,13 @@ router.post("/forgot-password", async (req, res) => {
       },
     });
 
-    const mailResult = await sendOtpEmail(normalizedEmail, otp, "reset-password");
-    res.json({
-      ...genericResponse,
-      expiresInMinutes: OTP_EXPIRY_MINUTES,
-      ...(mailResult.devMode ? { devOtp: otp } : {}),
-    });
+    await sendOtpEmail(normalizedEmail, otp, "reset-password");
+
+res.json({
+  success: true,
+  ...genericResponse,
+  expiresInMinutes: OTP_EXPIRY_MINUTES,
+});
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Couldn't process that request. Try again." });
@@ -218,12 +215,21 @@ router.post("/forgot-password/resend", async (req, res) => {
       data: { otpHash, attempts: 0, expiresAt: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000) },
     });
 
-    const mailResult = await sendOtpEmail(normalizedEmail, otp, "reset-password");
-    res.json({
-      message: "A new code has been sent.",
-      expiresInMinutes: OTP_EXPIRY_MINUTES,
-      ...(mailResult.devMode ? { devOtp: otp } : {}),
+    await sendOtpEmail(normalizedEmail, otp, "register");
+
+res.json({
+  success: true,
+  message: "A new verification code has been sent.",
+  expiresInMinutes: OTP_EXPIRY_MINUTES,
+});
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Couldn't resend the code. Try again.",
     });
+  }
+});
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Couldn't resend the code. Try again." });
