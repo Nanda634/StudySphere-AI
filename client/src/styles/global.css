@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -26,4 +27,510 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+:root{
+  --primary:#06b6d4;
+  --secondary:#2563eb;
+  --bg:#07111f;
+  --bg2:#0d1729;
+  --card:rgba(255,255,255,.06);
+  --border:rgba(255,255,255,.10);
+  --text:#ffffff;
+  --text2:#94a3b8;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+
+  font-family:"Poppins",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  min-height:100vh;
+
+}
+
+/* ==========================
+   BEAUTIFUL BACKGROUND
+========================== */
+
+body::before{
+
+content:"";
+
+position:fixed;
+
+width:550px;
+height:550px;
+
+top:-220px;
+left:-200px;
+
+background:#0891b2;
+
+opacity:.18;
+
+filter:blur(170px);
+
+border-radius:50%;
+
+pointer-events:none;
+
+z-index:-2;
+
+}
+
+body::after{
+
+content:"";
+
+position:fixed;
+
+width:550px;
+height:550px;
+
+bottom:-220px;
+right:-180px;
+
+background:#4338ca;
+
+opacity:.18;
+
+filter:blur(170px);
+
+border-radius:50%;
+
+pointer-events:none;
+
+z-index:-2;
+
+}
+
+/* ==========================
+   SCROLLBAR
+========================== */
+
+::-webkit-scrollbar{
+width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+background:#334155;
+border-radius:20px;
+}
+
+::-webkit-scrollbar-track{
+background:#08111f;
+}
+
+/* ==========================
+   SELECTION
+========================== */
+
+::selection{
+
+background:#06b6d4;
+
+color:white;
+
+}
+
+/* ==========================
+   GLASS CARD
+========================== */
+
+.glass{
+
+background:rgba(255,255,255,.06);
+
+backdrop-filter:blur(18px);
+
+-webkit-backdrop-filter:blur(18px);
+
+border:1px solid rgba(255,255,255,.10);
+
+box-shadow:
+
+0 20px 40px rgba(0,0,0,.35),
+
+0 0 0 1px rgba(255,255,255,.04);
+
+}
+
+/* ==========================
+   INPUT
+========================== */
+
+input{
+
+transition:.3s;
+
+}
+
+input:focus{
+
+outline:none;
+
+border-color:#06b6d4 !important;
+
+box-shadow:
+
+0 0 0 4px rgba(6,182,212,.15);
+
+}
+
+/* ==========================
+   BUTTON
+========================== */
+
+button{
+
+transition:.35s;
+
+cursor:pointer;
+
+}
+
+button:hover{
+
+transform:translateY(-2px);
+
+}
+
+button:active{
+
+transform:scale(.98);
+
+}
+
+/* ==========================
+   LINKS
+========================== */
+
+a{
+
+transition:.25s;
+
+}
+
+a:hover{
+
+opacity:.9;
+
+}
+
+/* ==========================
+   FEATURE CARD
+========================== */
+
+.feature-card{
+
+background:rgba(255,255,255,.05);
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:20px;
+
+padding:22px;
+
+transition:.35s;
+
+}
+
+.feature-card:hover{
+
+transform:translateY(-6px);
+
+border-color:#06b6d4;
+
+box-shadow:0 20px 35px rgba(0,0,0,.25);
+
+}
+
+/* ==========================
+   LOGIN CARD
+========================== */
+
+.login-card{
+
+background:rgba(255,255,255,.05);
+
+border:1px solid rgba(255,255,255,.08);
+
+backdrop-filter:blur(20px);
+
+border-radius:30px;
+
+padding:40px;
+
+box-shadow:
+
+0 30px 60px rgba(0,0,0,.4);
+
+}
+
+/* ==========================
+   INPUT
+========================== */
+
+.login-input{
+
+width:100%;
+
+padding:15px 18px;
+
+background:#111c2f;
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:14px;
+
+color:white;
+
+font-size:15px;
+
+}
+
+.login-input::placeholder{
+
+color:#94a3b8;
+
+}
+
+/* ==========================
+   PRIMARY BUTTON
+========================== */
+
+.primary-btn{
+
+width:100%;
+
+padding:15px;
+
+border:none;
+
+border-radius:14px;
+
+background:linear-gradient(90deg,#06b6d4,#2563eb);
+
+color:white;
+
+font-size:16px;
+
+font-weight:600;
+
+}
+
+.primary-btn:hover{
+
+box-shadow:
+
+0 15px 35px rgba(37,99,235,.35);
+
+}
+
+/* ==========================
+   ANIMATION
+========================== */
+
+.fadeUp{
+
+animation:fadeUp .8s ease;
+
+}
+
+@keyframes fadeUp{
+
+from{
+
+opacity:0;
+
+transform:translateY(35px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
+
+/* ==========================
+   FLOAT
+========================== */
+
+.float{
+
+animation:float 6s ease-in-out infinite;
+
+}
+
+@keyframes float{
+
+0%{
+
+transform:translateY(0);
+
+}
+
+50%{
+
+transform:translateY(-10px);
+
+}
+
+100%{
+
+transform:translateY(0);
+
+}
+
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media(max-width:1280px){
+
+.login-card{
+
+padding:34px;
+
+}
+
+}
+
+@media(max-width:1024px){
+
+.login-card{
+
+padding:32px;
+
+}
+
+h1{
+
+font-size:3rem;
+
+}
+
+}
+
+@media(max-width:768px){
+
+.login-card{
+
+padding:26px;
+
+border-radius:24px;
+
+}
+
+.login-input{
+
+padding:14px;
+
+}
+
+.primary-btn{
+
+padding:14px;
+
+}
+
+}
+
+@media(max-width:640px){
+
+body{
+
+padding:0;
+
+}
+
+.login-card{
+
+padding:22px;
+
+margin:15px;
+
+}
+
+}
+
+@media(max-width:480px){
+
+.login-card{
+
+padding:20px;
+
+}
+
+.login-input{
+
+font-size:14px;
+
+}
+
+.primary-btn{
+
+font-size:15px;
+
+}
+
+}
+
+@media(max-width:360px){
+
+.login-card{
+
+padding:18px;
+
+}
+
+.login-input{
+
+padding:12px;
+
+}
+
+}
+
+@media(min-width:1600px){
+
+.login-card{
+
+padding:50px;
+
+}
+
+}
+
+@media(prefers-reduced-motion:reduce){
+
+*{
+
+animation:none !important;
+
+transition:none !important;
+
+scroll-behavior:auto;
+
+}
+
 }
