@@ -2,20 +2,17 @@ require("dotenv").config();
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // false for port 587 (STARTTLS)
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-});
 
-// Verify SMTP connection when the server starts
-transporter.verify((error) => {
-  if (error) {
-    console.error("❌ Email configuration error:", error.message);
-  } else {
-    console.log("✅ Gmail SMTP connected successfully.");
-  }
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 20000,
 });
 
 function generateOtp() {
@@ -134,9 +131,7 @@ async function sendOtpEmail(email, otp, purpose = "register") {
         purpose === "reset-password"
           ? "StudySphere AI Password Reset OTP"
           : "StudySphere AI Email Verification OTP",
-
       html: otpEmailHtml(otp, purpose),
-
       text: `Your StudySphere AI OTP is ${otp}. It expires in ${
         process.env.OTP_EXPIRY_MINUTES || 5
       } minutes.`,
