@@ -9,28 +9,20 @@ function otpEmailHtml(otp, purpose = "register") {
   const expiry = process.env.OTP_EXPIRY_MINUTES || 5;
 
   return `
-    <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto; padding:20px;">
+    <div style="font-family:Arial,sans-serif;padding:20px">
       <h2 style="color:#2563eb;">StudySphere AI</h2>
 
       <p>
         ${
           purpose === "reset-password"
             ? "Use the OTP below to reset your password."
-            : "Use the OTP below to verify your StudySphere AI account."
+            : "Use the OTP below to verify your email."
         }
       </p>
 
-      <div style="
-        font-size:40px;
-        font-weight:bold;
-        letter-spacing:8px;
-        text-align:center;
-        color:#2563eb;
-        margin:20px 0;">
-        ${otp}
-      </div>
+      <h1 style="letter-spacing:6px;color:#2563eb;">${otp}</h1>
 
-      <p>This OTP expires in <b>${expiry} minutes</b>.</p>
+      <p>This OTP expires in ${expiry} minutes.</p>
     </div>
   `;
 }
@@ -59,20 +51,21 @@ async function sendOtpEmail(email, otp, purpose = "register") {
       }
     );
 
-    console.log("OTP Sent");
+    console.log("========== BREVO RESPONSE ==========");
+    console.log(response.data);
+    console.log("OTP sent to:", email);
+    console.log("===================================");
+
     return response.data;
   } catch (err) {
-    console.error(
-      "Brevo Error:",
-      err.response?.data || err.message
-    );
-    throw new Error(
-      err.response?.data?.message || err.message
-    );
+    console.error("========== BREVO ERROR ==========");
+    console.error(err.response?.data || err.message);
+    console.error("================================");
+    throw err;
   }
 }
 
 module.exports = {
-  sendOtpEmail,
   generateOtp,
+  sendOtpEmail,
 };
