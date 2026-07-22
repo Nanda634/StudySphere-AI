@@ -48,11 +48,22 @@ function otpEmailHtml(otp, purpose = "register") {
     </div>
   `;
 }
+const dns = require("dns");
+
+dns.lookup("smtp.gmail.com", (err, address, family) => {
+  if (err) {
+    console.error("DNS ERROR:", err);
+  } else {
+    console.log(`DNS OK: ${address} IPv${family}`);
+  }
+});
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false,
+  requireTLS: true,
+  family: 4,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -61,12 +72,11 @@ const transporter = nodemailer.createTransport({
   greetingTimeout: 60000,
   socketTimeout: 60000,
 });
-
-transporter.verify(function (error, success) {
-  if (error) {
-    console.error("SMTP Error:", error);
+transporter.verify((err, success) => {
+  if (err) {
+    console.error("VERIFY ERROR:", err);
   } else {
-    console.log("SMTP Server is ready.");
+    console.log("SMTP VERIFIED");
   }
 });
 
