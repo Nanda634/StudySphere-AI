@@ -1,7 +1,13 @@
 require("dotenv").config();
-const { Resend } = require("resend");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const Brevo = require("@getbrevo/brevo");
+
+const apiInstance = new Brevo.TransactionalEmailsApi();
+
+apiInstance.setApiKey(
+  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY
+);
 
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -10,68 +16,56 @@ function generateOtp() {
 function otpEmailHtml(otp, purpose = "register") {
   const expiry = process.env.OTP_EXPIRY_MINUTES || 5;
 
-  const title =
-    purpose === "reset-password"
-      ? "Reset Your Password"
-      : "Verify Your Email";
-
-  const description =
-    purpose === "reset-password"
-      ? "Use the OTP below to reset your password."
-      : "Use the OTP below to verify your StudySphere AI account.";
-
   return `
-    <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto; padding:20px; border:1px solid #ddd; border-radius:10px;">
-      <h2 style="color:#2563eb;">StudySphere AI</h2>
+  <div style="font-family:Arial;padding:20px">
+      <h2>StudySphere AI</h2>
 
-      <h3>${title}</h3>
-
-      <p>${description}</p>
-
-      <div style="
-        font-size:40px;
-        font-weight:bold;
-        letter-spacing:8px;
-        text-align:center;
-        color:#2563eb;
-        margin:20px 0;">
-        ${otp}
-      </div>
-
-      <p>This OTP expires in <b>${expiry} minutes</b>.</p>
-
-      <p>If you didn't request this email, simply ignore it.</p>
-
-      <hr>
-
-      <p style="font-size:12px;color:#666;">
-        © ${new Date().getFullYear()} StudySphere AI
+      <p>
+      ${
+        purpose === "reset-password"
+          ? "Use this OTP to reset your password."
+          : "Use this OTP to verify your email."
+      }
       </p>
-    </div>
+
+      <h1 style="letter-spacing:6px">${otp}</h1>
+
+      <p>This OTP expires in ${expiry} minutes.</p>
+  </div>
   `;
 }
 
 async function sendOtpEmail(email, otp, purpose = "register") {
   try {
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM,
-      to: email,
-      subject:
-        purpose === "reset-password"
-          ? "StudySphere AI Password Reset OTP"
-          : "StudySphere AI Email Verification OTP",
-      html: otpEmailHtml(otp, purpose),
-    });
+    const emailData = new Brevo.SendSmtpEmail();
 
-    if (error) {
-      throw new Error(error.message);
-    }
+    emailData.subject =
+      purpose === "reset-password"
+        ? "StudySphere AI Password Reset OTP"
+        : "StudySphere AI Email Verification OTP";
 
-    console.log("✅ OTP email sent");
-    return data;
+    emailData.htmlContent = otpEmailHtml(otp, purpose);
+
+    emailData.sender = {
+      email: process.env.EMAIL_FROM,
+      name: "StudySphere AI",
+    };
+
+    emailData.to = [
+      {
+        email,
+      },
+    ];
+
+    const response = await apiInstance.sendTransacEmail(emailData);
+
+    console.log("OTP sent");
+    console.log(response);
+
+    return response;
   } catch (err) {
-    console.error("Resend Error:", err);
-    throw new Error(`Unable to send verification email: ${err.message}`);
+    console.error(err);
+    throw new Error(err.message);
   }
 }
 
