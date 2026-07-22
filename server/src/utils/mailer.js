@@ -1,5 +1,7 @@
 require("dotenv").config();
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -48,42 +50,11 @@ function otpEmailHtml(otp, purpose = "register") {
     </div>
   `;
 }
-const dns = require("dns");
-
-dns.lookup("smtp.gmail.com", (err, address, family) => {
-  if (err) {
-    console.error("DNS ERROR:", err);
-  } else {
-    console.log(`DNS OK: ${address} IPv${family}`);
-  }
-});
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  requireTLS: true,
-  family: 4,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 60000,
-  greetingTimeout: 60000,
-  socketTimeout: 60000,
-});
-transporter.verify((err, success) => {
-  if (err) {
-    console.error("VERIFY ERROR:", err);
-  } else {
-    console.log("SMTP VERIFIED");
-  }
-});
 
 async function sendOtpEmail(email, otp, purpose = "register") {
   try {
-    const info = await transporter.sendMail({
-      from: `"StudySphere AI" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM,
       to: email,
       subject:
         purpose === "reset-password"
@@ -92,19 +63,17 @@ async function sendOtpEmail(email, otp, purpose = "register") {
       html: otpEmailHtml(otp, purpose),
     });
 
-    console.log("✅ OTP email sent successfully");
-    console.log(info);
+    if (error) {
+      throw new Error(error.message);
+    }
 
-    return {
-      delivered: true,
-      messageId: info.messageId,
-    };
-  } catch (error) {
-  console.error(error);
-  throw new Error(`Unable to send verification email: ${error.message}`);
-}
+    console.log("✅ OTP email sent");
+    return data;
+  } catch (err) {
+    console.error("Resend Error:", err);
+    throw new Error(`Unable to send verification email: ${err.message}`);
   }
-
+}
 
 module.exports = {
   sendOtpEmail,
