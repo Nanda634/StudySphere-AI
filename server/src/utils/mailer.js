@@ -84,12 +84,12 @@ async function sendOtpEmail(email, otp, purpose = "register") {
       delivered: true,
       messageId: info.messageId,
     };
-  } catch (err) {
-    console.error("❌ Email Error:", err);
-
-    throw new Error("Unable to send verification email.");
-  }
+  } catch (error) {
+  console.error(error);
+  throw new Error(`Unable to send verification email: ${error.message}`);
 }
+  }
+
 
 module.exports = {
   sendOtpEmail,
