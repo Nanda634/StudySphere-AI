@@ -29,6 +29,14 @@ function otpEmailHtml(otp, purpose = "register") {
 
 async function sendOtpEmail(email, otp, purpose = "register") {
   try {
+    console.log("====================================");
+    console.log("Sending OTP Email");
+    console.log("Recipient :", email);
+    console.log("Sender    :", process.env.EMAIL_FROM);
+    console.log("OTP        :", otp);
+    console.log("Purpose    :", purpose);
+    console.log("====================================");
+
     const response = await axios.post(
       "https://api.brevo.com/v3/smtp/email",
       {
@@ -36,7 +44,11 @@ async function sendOtpEmail(email, otp, purpose = "register") {
           name: "StudySphere AI",
           email: process.env.EMAIL_FROM,
         },
-        to: [{ email }],
+        to: [
+          {
+            email: email,
+          },
+        ],
         subject:
           purpose === "reset-password"
             ? "StudySphere AI Password Reset OTP"
@@ -47,20 +59,24 @@ async function sendOtpEmail(email, otp, purpose = "register") {
         headers: {
           "api-key": process.env.BREVO_API_KEY,
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
       }
     );
 
-    console.log("========== BREVO RESPONSE ==========");
-    console.log(response.data);
-    console.log("OTP sent to:", email);
-    console.log("===================================");
+    console.log("========== BREVO SUCCESS ==========");
+    console.log("Status:", response.status);
+    console.log("Response:", response.data);
+    console.log("==================================");
 
     return response.data;
   } catch (err) {
-    console.error("========== BREVO ERROR ==========");
-    console.error(err.response?.data || err.message);
-    console.error("================================");
+    console.log("=========== BREVO ERROR ===========");
+    console.log("Status:", err.response?.status);
+    console.log("Response:", err.response?.data);
+    console.log("Message:", err.message);
+    console.log("===================================");
+
     throw err;
   }
 }
