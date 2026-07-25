@@ -1,3 +1,4 @@
+console.log("✅ AUTH FILE:", __filename);
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -126,36 +127,57 @@ router.post("/verify-otp", async (req, res) => {
 router.post("/resend-otp", async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ error: "email is required" });
+    if (!email)
+      return res.status(400).json({ error: "email is required" });
+
     const normalizedEmail = email.trim().toLowerCase();
 
     const record = await prisma.emailOtp.findFirst({
       where: { email: normalizedEmail, purpose: "register" },
       orderBy: { createdAt: "desc" },
     });
+
     if (!record) {
-      return res.status(400).json({ error: "No pending verification for this email. Please register again." });
+      return res.status(400).json({
+        error: "No pending verification for this email. Please register again.",
+      });
     }
 
     const otp = generateOtp();
     const otpHash = await bcrypt.hash(otp, 10);
+
     await prisma.emailOtp.update({
       where: { id: record.id },
-      data: { otpHash, attempts: 0, expiresAt: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000) },
+      data: {
+        otpHash,
+        attempts: 0,
+        expiresAt: new Date(
+          Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000
+        ),
+      },
     });
 
     await sendOtpEmail(normalizedEmail, otp, "register");
 
-res.json({
-  success: true,
-  message: "A new verification code has been sent.",
-  expiresInMinutes: OTP_EXPIRY_MINUTES,
-});
+    res.json({
+      success: true,
+      message: "A new verification code has been sent.",
+      expiresInMinutes: OTP_EXPIRY_MINUTES,
+    });
 
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Couldn't resend the code. Try again.",
+    });
+  }
+});
 // STEP 1 of password reset: if an account exists for this email, send a reset code. Always
 // returns the same generic message either way so this endpoint can't be used to check which
 // emails are registered.
 router.post("/forgot-password", async (req, res) => {
+  console.log("🔥 Forgot Password Route Hit");
+  console.log(req.body);
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: "email is required" });
@@ -230,11 +252,7 @@ res.json({
     });
   }
 });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Couldn't resend the code. Try again." });
-  }
-});
+  
 
 // STEP 2 of password reset: verify the code and set the new password in one call.
 router.post("/reset-password", async (req, res) => {
@@ -341,5 +359,15 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Login failed" });
   }
 });
-
+router.get("/test", (req, res) => {
+  res.json({ message: "Auth route is working" });
+});
+router.post("/forgot-password", (req, res, next) => {
+  console.log("🔥 forgot-password route matched");
+  next();
+});
+router.post("/forgot-password", (req, res) => {
+  console.log("🔥 FORGOT PASSWORD ROUTE HIT");
+  res.json({ success: true });
+});
 module.exports = router;

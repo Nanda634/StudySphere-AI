@@ -57,6 +57,11 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
+console.log(
+  app._router.stack
+    .filter((r) => r.route)
+    .map((r) => `${Object.keys(r.route.methods)} ${r.route.path}`)
+);
 
 app.listen(PORT, () => {
   console.log(`🚀 StudySphere AI backend is running on port ${PORT}`);

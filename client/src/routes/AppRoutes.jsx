@@ -2,6 +2,9 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 
+import StudentLayout from "../components/layout/StudentLayout";
+// import FacultyLayout from "../layouts/FacultyLayout"; // Optional
+
 import Landing from "../pages/Landing";
 import StudentLogin from "../pages/auth/StudentLogin";
 import StudentRegister from "../pages/auth/StudentRegister";
@@ -29,10 +32,14 @@ import LiveClasses from "../pages/faculty/LiveClasses";
 import Analytics from "../pages/faculty/Analytics";
 
 import NotFound from "../pages/errors/NotFound";
+import Profile from "../pages/student/Profile";
+import Progress from "../pages/student/Progress";
+import Settings from "../pages/student/Settings";
 
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Landing */}
       <Route path="/" element={<Landing />} />
 
       {/* Auth */}
@@ -42,30 +49,60 @@ export default function AppRoutes() {
       <Route path="/faculty/register" element={<FacultyRegister />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
-      {/* Student area */}
-      <Route path="/student/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/student/assistant" element={<ProtectedRoute><AIAssistant /></ProtectedRoute>} />
-      <Route path="/student/planner" element={<ProtectedRoute><Planner /></ProtectedRoute>} />
-      <Route path="/student/pomodoro" element={<ProtectedRoute><Pomodoro /></ProtectedRoute>} />
-      <Route path="/student/cgpa" element={<ProtectedRoute><Cgpa /></ProtectedRoute>} />
-      <Route path="/student/attendance" element={<ProtectedRoute><Attendance /></ProtectedRoute>} />
-      <Route path="/student/courses" element={<ProtectedRoute><Courses /></ProtectedRoute>} />
-      <Route path="/student/exam-paper" element={<ProtectedRoute><ExamPaperGenerator /></ProtectedRoute>} />
-      <Route path="/student/coins" element={<ProtectedRoute><Coins /></ProtectedRoute>} />
-      <Route path="/student/mock-exams" element={<ProtectedRoute><MockExams /></ProtectedRoute>} />
-      <Route path="/student/assigned-quizzes" element={<ProtectedRoute><AssignedQuizzes /></ProtectedRoute>} />
-      <Route path="/student/scores" element={<ProtectedRoute><Scores /></ProtectedRoute>} />
+      {/* Student Area */}
+      <Route
+        path="/student"
+        element={
+          <ProtectedRoute>
+            <StudentLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="assistant" element={<AIAssistant />} />
+        <Route path="planner" element={<Planner />} />
+        <Route path="pomodoro" element={<Pomodoro />} />
+        <Route path="cgpa" element={<Cgpa />} />
+        <Route path="attendance" element={<Attendance />} />
+        <Route path="courses" element={<Courses />} />
+        <Route path="exam-paper" element={<ExamPaperGenerator />} />
+        <Route path="coins" element={<Coins />} />
+        <Route path="mock-exams" element={<MockExams />} />
+        <Route path="assigned-quizzes" element={<AssignedQuizzes />} />
+        <Route path="scores" element={<Scores />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="progress" element={<Progress />} />
+        <Route path="settings" element={<Settings />} />
+        
+      </Route>
 
-      {/* Faculty area */}
-      <Route path="/faculty/dashboard" element={<ProtectedRoute><FacultyDashboard /></ProtectedRoute>} />
-      <Route path="/faculty/materials" element={<ProtectedRoute><Materials /></ProtectedRoute>} />
-      <Route path="/faculty/assignments" element={<ProtectedRoute><Assignments /></ProtectedRoute>} />
-      <Route path="/faculty/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+      {/* Faculty Area */}
+      <Route
+        path="/faculty"
+        element={
+          <ProtectedRoute>
+            {/* Replace with <FacultyLayout /> if you have one */}
+            <React.Fragment />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="dashboard" element={<FacultyDashboard />} />
+        <Route path="materials" element={<Materials />} />
+        <Route path="assignments" element={<Assignments />} />
+        <Route path="analytics" element={<Analytics />} />
+      </Route>
 
-      {/* Shared (both roles) */}
-      <Route path="/live-classes" element={<ProtectedRoute><LiveClasses /></ProtectedRoute>} />
+      {/* Shared */}
+      <Route
+        path="/live-classes"
+        element={
+          <ProtectedRoute>
+            <LiveClasses />
+          </ProtectedRoute>
+        }
+      />
 
-      {/* Fallback */}
+      {/* 404 */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

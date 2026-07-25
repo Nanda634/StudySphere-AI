@@ -101,15 +101,7 @@ export default function AIAssistant() {
 >
       <div className="flex overflow-x-auto whitespace-nowrap gap-2 pb-2 mb-6 border-b border-white/10 scrollbar-hide">
         <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl">🪿 Goose — your AI Study Assistant</h1>
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className="bg-panel border border-white/10 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-glow"
-        >
-          {LANGUAGES.map((l) => (
-            <option key={l.code} value={l.code}>{l.label}</option>
-          ))}
-        </select>
+       
       </div>
       <p className="text-ink2 mb-6">Type a topic, or upload a PDF, and Goose will generate what you need.</p>
 
@@ -137,25 +129,21 @@ export default function AIAssistant() {
             <div>
               <label className="text-sm text-ink2 block mb-1">Topic</label>
               <input
-                value={topic}
-                onChange={(e) => {
-                  setTopic(e.target.value);
-                  setPdfText("");
-                  setPdfName("");
-                }}
-                placeholder="e.g. Operating System Scheduling"
-                className="w-full bg-ink border border-white/10 rounded-lg px-4 py-2 focus:border-glow outline-none"
-              />
+  value={topic}
+  onChange={(e) => setTopic(e.target.value)}
+  placeholder="e.g. Operating System Scheduling"
+  className="w-full rounded-2xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-400 px-5 py-3 focus:outline-none focus:border-violet-500"
+/>
             </div>
 
             <div>
               <label className="text-sm text-ink2 block mb-1">Exam / context target (optional)</label>
               <input
-                value={examTarget}
-                onChange={(e) => setExamTarget(e.target.value)}
-                placeholder="e.g. GATE, UPSC, 12th board exam"
-                className="w-full bg-ink border border-white/10 rounded-lg px-4 py-2 focus:border-glow outline-none"
-              />
+  value={examTarget}
+  onChange={(e) => setExamTarget(e.target.value)}
+  placeholder="e.g. GATE, UPSC, 12th board exam"
+  className="w-full rounded-2xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-400 px-5 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+/>
             </div>
 
             <div className="flex items-center gap-3 text-sm text-ink2">
@@ -186,27 +174,46 @@ export default function AIAssistant() {
                 <div className="flex-1">
                   <label className="text-sm text-ink2 block mb-1">Difficulty</label>
                   <select
-                    value={difficulty}
-                    onChange={(e) => setDifficulty(e.target.value)}
-                    className="w-full bg-ink border border-white/10 rounded-lg px-4 py-2 outline-none"
-                  >
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                  </select>
+  value={difficulty}
+  onChange={(e) => setDifficulty(e.target.value)}
+  className="w-full rounded-2xl bg-slate-800 border border-slate-700 text-white px-5 py-3 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+>
+  <option value="easy" className="bg-slate-900 text-white">
+    Easy
+  </option>
+
+  <option value="intermediate" className="bg-slate-900 text-white">
+    Intermediate
+  </option>
+
+  <option value="hard" className="bg-slate-900 text-white">
+    Hard
+  </option>
+</select>
                 </div>
                 <div className="flex-1">
                   <label className="text-sm text-ink2 block mb-1">Number of questions</label>
-                  <select
-                    value={count}
-                    onChange={(e) => setCount(e.target.value)}
-                    className="w-full bg-ink border border-white/10 rounded-lg px-4 py-2 outline-none"
-                  >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                  </select>
+                 <select
+  value={count}
+  onChange={(e) => setCount(e.target.value)}
+  className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-2 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+>
+  <option value={5} className="bg-slate-900 text-white">
+    5
+  </option>
+
+  <option value={10} className="bg-slate-900 text-white">
+    10
+  </option>
+
+  <option value={20} className="bg-slate-900 text-white">
+    20
+  </option>
+
+  <option value={50} className="bg-slate-900 text-white">
+    50
+  </option>
+</select>
                 </div>
               </div>
             )}
@@ -565,28 +572,29 @@ function ChatWithHistory({ speechLang, language }) {
           </label>
 
           <input
-            value={chatInput}
-            onChange={(e) =>
-              setChatInput(e.target.value)
-            }
-            onKeyDown={(e) =>
-              e.key === "Enter" &&
-              sendChat(chatInput)
-            }
-            placeholder="Ask Goose anything..."
-            className="
-              flex-1
-              min-w-[180px]
-              h-12
-              bg-ink
-              rounded-xl
-              px-4
-              outline-none
-              border
-              border-white/10
-              focus:border-glow
-            "
-          />
+  value={chatInput}
+  onChange={(e) => setChatInput(e.target.value)}
+  onKeyDown={(e) => e.key === "Enter" && sendChat(chatInput)}
+  placeholder="Ask Goose anything..."
+  className="
+    flex-1
+    min-w-[180px]
+    h-12
+    rounded-xl
+    bg-slate-800
+    text-white
+    placeholder:text-slate-400
+    px-4
+    outline-none
+    border
+    border-slate-700
+    focus:border-violet-500
+    focus:ring-2
+    focus:ring-violet-500/20
+    caret-white
+  "
+/>
+          
 
           <button
             onClick={() => sendChat(chatInput)}

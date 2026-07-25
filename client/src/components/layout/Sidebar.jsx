@@ -1,35 +1,98 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
+import {
+  LayoutDashboard,
+  BookOpen,
+  Brain,
+  Calendar,
+  ClipboardList,
+  Coins,
+  Trophy,
+} from "lucide-react";
 
-const STUDENT_LINKS = [
-  { to: "/student/dashboard", label: "Dashboard" },
-  { to: "/student/assistant", label: "AI Assistant" },
-  { to: "/student/planner", label: "Planner" },
-  { to: "/student/pomodoro", label: "Pomodoro" },
-  { to: "/student/cgpa", label: "CGPA" },
-  { to: "/student/attendance", label: "Attendance" },
-];
+export default function Sidebar({ sidebarOpen }) {
+  const menuItems = [
+    {
+      icon: <LayoutDashboard size={22} />,
+      text: "Dashboard",
+      path: "/student/dashboard",
+    },
+    {
+      icon: <BookOpen size={22} />,
+      text: "Courses",
+      path: "/student/courses",
+    },
+    {
+      icon: <Brain size={22} />,
+      text: "Goose AI",
+      path: "/student/assistant",
+    },
+    {
+      icon: <Calendar size={22} />,
+      text: "Planner",
+      path: "/student/planner",
+    },
+    {
+      icon: <ClipboardList size={22} />,
+      text: "Mock Exams",
+      path: "/student/mock-exams",
+    },
+    {
+      icon: <Coins size={22} />,
+      text: "Coins",
+      path: "/student/coins",
+    },
+    {
+      icon: <Trophy size={22} />,
+      text: "Scores",
+      path: "/student/scores",
+    },
+  ];
 
-// A vertical nav alternative to Navbar's top tabs — handy for a mobile drawer
-// or a wider desktop layout. Not wired in by default; import and render
-// wherever a side-nav layout is preferred over the top nav.
-export default function Sidebar({ onNavigate }) {
   return (
-    <nav className="flex flex-col gap-1 w-56 bg-panel rounded-2xl p-3">
-      {STUDENT_LINKS.map((l) => (
-        <NavLink
-          key={l.to}
-          to={l.to}
-          onClick={onNavigate}
-          className={({ isActive }) =>
-            `px-4 py-2 text-sm rounded-lg transition-colors ${
-              isActive ? "bg-glow/20 text-glow" : "text-ink2 hover:text-paper hover:bg-panelLight"
-            }`
-          }
-        >
-          {l.label}
-        </NavLink>
-      ))}
-    </nav>
+    <aside
+      className={`
+    fixed md:relative
+    top-16 md:top-0
+    left-0
+    z-40
+    h-[calc(100vh-64px)]
+    bg-slate-900
+    border-r border-slate-700
+    transition-all duration-300
+
+    ${
+      sidebarOpen
+        ? "translate-x-0 w-64"
+        : "-translate-x-full md:translate-x-0 md:w-20"
+    }
+  `}
+    >
+      <nav className="flex-1 p-3 space-y-2">
+        {menuItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center ${
+                sidebarOpen ? "justify-start" : "justify-center"
+              } gap-3 rounded-xl px-3 py-3 transition-all duration-200
+              ${
+                isActive
+                  ? "bg-slate-800 text-white"
+                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
+              }`
+            }
+          >
+            {item.icon}
+
+            {sidebarOpen && (
+              <span className="font-medium whitespace-nowrap">
+                {item.text}
+              </span>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+    </aside>
   );
 }
