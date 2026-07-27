@@ -45,9 +45,7 @@ export default function OtpStep({
   }, [cooldown]);
 
   function updateDigit(index, value) {
-    const clean = value
-      .replace(/\D/g, "")
-      .slice(-1);
+    const clean = value.replace(/\D/g, "").slice(-1);
 
     setDigits((old) => {
       const next = [...old];
@@ -109,7 +107,6 @@ export default function OtpStep({
 
     try {
       await verifyRegistrationOtp(email, otp);
-
       onVerified();
     } catch (err) {
       setError(
@@ -152,30 +149,29 @@ export default function OtpStep({
   return (
     <form
       onSubmit={handleVerify}
-      className="bg-panel rounded-2xl p-6 space-y-4"
+      className="bg-card rounded-2xl p-6 space-y-4 shadow-soft"
     >
       <div>
-        <h2 className="font-display text-xl mb-1">
+        <h2 className="text-text text-xl font-semibold mb-1">
           Verify your email
         </h2>
 
-        <p className="text-ink2 text-sm">
-          Enter the 6-digit verification code sent to
-          <span className="text-paper font-medium">
-            {" "}
+        <p className="text-muted text-sm">
+          Enter the 6-digit verification code sent to{" "}
+          <span className="text-text font-medium">
             {email}
           </span>
         </p>
       </div>
 
       {error && (
-        <p className="text-coral text-sm">
+        <p className="text-danger text-sm">
           {error}
         </p>
       )}
 
       {info && (
-        <p className="text-teal text-sm">
+        <p className="text-success text-sm">
           {info}
         </p>
       )}
@@ -198,8 +194,30 @@ export default function OtpStep({
               handleKeyDown(index, e)
             }
             inputMode="numeric"
+            autoComplete={
+              index === 0
+                ? "one-time-code"
+                : "off"
+            }
             maxLength={1}
-            className="w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-mono bg-ink border border-white/10 rounded-lg focus:border-glow outline-none"
+            className="
+              w-11 h-13
+              sm:w-12 sm:h-14
+              rounded-xl
+              border border-border
+              bg-surface
+              text-text
+              caret-white
+              text-center
+              text-xl
+              font-bold
+              font-mono
+              outline-none
+              transition
+              focus:border-primary
+              focus:ring-2
+              focus:ring-primary/40
+            "
           />
         ))}
       </div>
@@ -207,7 +225,7 @@ export default function OtpStep({
       <button
         type="submit"
         disabled={verifying}
-        className="w-full bg-glow text-ink font-semibold py-2.5 rounded-lg hover:brightness-110 transition disabled:opacity-50"
+        className="w-full bg-primary text-white font-semibold py-3 rounded-xl hover:brightness-110 transition disabled:opacity-50"
       >
         {verifying
           ? "Verifying..."
@@ -218,7 +236,7 @@ export default function OtpStep({
         <button
           type="button"
           onClick={onBack}
-          className="text-ink2 hover:underline"
+          className="text-muted hover:text-text transition"
         >
           ← Edit Details
         </button>
@@ -229,7 +247,7 @@ export default function OtpStep({
           disabled={
             resending || cooldown > 0
           }
-          className="text-glow hover:underline disabled:opacity-50"
+          className="text-secondary hover:text-primary transition disabled:opacity-50"
         >
           {resending
             ? "Sending..."
